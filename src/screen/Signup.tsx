@@ -1,7 +1,13 @@
 import {Component} from 'react';
 import React from 'react';
-
-import { Text,View,ScrollView,TouchableOpacity,StyleSheet,StatusBar,Modal,Alert,TouchableHighlight } from 'react-native';
+import { Text,
+    View,
+    ScrollView,
+    TouchableOpacity,
+    StyleSheet,
+    StatusBar,
+    AsyncStorage,
+} from 'react-native';
 import FormTextInput from '../components/FormTextInput';
 import FormButton from '../components/FormButton';
 import LogoComponent from '../components/LogoComponent';
@@ -11,30 +17,79 @@ interface props{
 }
 
 interface state{
-    name : string,
-    email : string,
-    password : string,
+    inputState : {
+        name: string,
+        email: string,
+        password: string,
+    },
     modalVisible : boolean,
+    errors : {
+        name: string,
+        email: string,
+        password: string,
+    },
 }
+
+const validEmailRegex = RegExp(
+	/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+);
 
 class Signup extends Component<props,state>{
     constructor(props : props){
         super(props);
         this.state = {
-            name  : '',
-            email  : '',
-            password : '',
+            inputState : {
+                name:'',
+                email:'',
+                password:'',
+            },
             modalVisible : true,
+            errors : {
+                name: '',
+                email:'',
+                password:''
+            },
         }
     }
-    updateName = (val : string) => {
-        this.setState({name : val})
-    }
-    updateEmail = (val : string) => {
-        this.setState({name : val})
-    }
-    updatePassword = (val : string) => {
-        this.setState({name : val})
+    getInputValues = (val : string,name : string) => {
+        let obj = this.state.inputState;
+        let errorObj = this.state.errors;
+        if(name == "name"){
+            obj.name = val;
+            this.setState({inputState : obj});
+            if(val==''){       
+                errorObj.name = 'Name is required';
+                this.setState({errors:errorObj});         
+            }
+            else{
+                errorObj.name = '';
+                this.setState({errors:errorObj});
+            }
+        }
+        else if(name == "email"){
+            obj.email = val;
+            this.setState({inputState : obj});
+            if(val==''){       
+                errorObj.email = 'Email is required';
+                this.setState({errors:errorObj});         
+            }
+            else{
+                errorObj.email =validEmailRegex.test(val) ? "" : "Email is not valid!";
+                this.setState({errors:errorObj});
+            }
+        }
+        else if(name == "password"){
+            obj.password = val;
+            this.setState({inputState : obj});
+            if(val==''){       
+                errorObj.password = 'Password is required';
+                this.setState({errors:errorObj});         
+            }
+            else{
+                errorObj.password = '';
+                this.setState({errors:errorObj});
+            }
+        }
     }
     createFields(val:any){
         const form = [];
@@ -45,15 +100,48 @@ class Signup extends Component<props,state>{
                 returnKeyLabel={val[i].returnKeyLabel}
                 secure={val[i].secure}
                 updateState={val[i].updateState}
-                />)
+                errorMessage={val[i].errorMessage}
+            />)
         }
         return form;
     }
+    validateForm(){
+        let errorObj = this.state.errors;
+        let isvalid = true;
+        if(this.state.inputState.name ==''){
+            errorObj.name = 'Name is required';
+            this.setState({errors:errorObj}); 
+            isvalid = false;
+        }
+        if(this.state.inputState.email==''){
+            errorObj.email = 'Email is required';
+            this.setState({errors:errorObj}); 
+            isvalid = false;
+        }
+        if(this.state.inputState.password==''){
+            errorObj.password = 'Password is required';
+            this.setState({errors:errorObj}); 
+            isvalid = false;
+        }
+        return isvalid;
+    }
+    _storeData = async () => {
+        try {
+            await AsyncStorage.setItem('userData',JSON.stringify(this.state.inputState));
+        } catch (error) {
+            // Error saving data
+        }
+    }
+    submitForm = () => {        
+        if(this.validateForm()==true){
+            this._storeData();
+        }
+    }
     render(){
         const fields = [
-            {name:"name",inputPlaceholder:"Name",secure:false,updateState:this.updateName,returnKeyLabel:"next"},
-            {name:"email",inputPlaceholder:"Email",secure:false,updateState:this.updateEmail,returnKeyLabel:"next"},
-            {name:"password",inputPlaceholder:"********",secure:true,updateState:this.updatePassword,returnKeyLabel:"done"}
+            {name:"name",inputPlaceholder:"Name",secure:false,updateState:this.getInputValues,returnKeyLabel:"next",errorMessage:this.state.errors.name},
+            {name:"email",inputPlaceholder:"Email",secure:false,updateState:this.getInputValues,returnKeyLabel:"next",errorMessage:this.state.errors.email},
+            {name:"password",inputPlaceholder:"********",secure:true,updateState:this.getInputValues,returnKeyLabel:"done",errorMessage:this.state.errors.password}
         ]; 
         return(
             <View style={styles.container}>
@@ -62,40 +150,16 @@ class Signup extends Component<props,state>{
                     <View style={styles.form}>
                         <LogoComponent/>
                         {this.createFields(fields)}
-                        <FormButton value="Signup"/>
+                        <FormButton value="Signup" clickEvent={this.submitForm}/>
                         <TouchableOpacity>
                             <Text style={styles.newRegister} onPress={()=>this.props.navigation.navigate('LoginScreen')}>Already have an account?</Text>
                         </TouchableOpacity>
-                        {/* <TouchableHighlight onPress={() => {this.setModalInVisible(this.state.modalVisible)}}>
-                            <Text>CLick for modal</Text>
-                        </TouchableHighlight> */}
                     </View>
-                    {/* <Modal
-                    animationType="fade"
-                    transparent={false}
-                    visible={this.state.modalVisible}
-                    onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
-                    }}>
-                        <View style={{marginTop: 22}}>
-                            <View>
-                            <Text>Hello World!</Text>
-
-                            <TouchableHighlight
-                                onPress={() => {
-                                this.setModalVisible(!this.state.modalVisible);
-                                }}>
-                                <Text>Hide Modal</Text>
-                            </TouchableHighlight>
-                            </View>
-                        </View>
-                    </Modal> */}
                 </ScrollView>
             </View>
         );
     }
 }
-
 const styles = StyleSheet.create({
     container: {
         flex:1,
