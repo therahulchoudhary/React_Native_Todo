@@ -1,6 +1,7 @@
 import { Component } from "react";
 import React from 'react';
 import { StyleSheet,View,TouchableOpacity,Text, Image } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 interface props{
 }
@@ -15,9 +16,8 @@ class LogoComponent extends Component<props, state>{
   render(){
     return (
       <View style={styles.container}>
-        <View style={{alignContent:'center',width:"100%"}}>
-            <Image style={styles.logoImage} source={require('../assets/guava-background.png')}></Image>
-        </View>
+          {/* <Image style={{height:50,width:50}} source={require('../assets/logo.png')}></Image> */}
+          <Icon name="assignment" size={40} color="white"/>
       </View>
     );
   }    
@@ -26,13 +26,12 @@ class LogoComponent extends Component<props, state>{
 const styles = StyleSheet.create({
     container: {
         flexGrow:1,
-        justifyContent: 'flex-start',
+        backgroundColor:"#3B90FA",
+        borderRadius:50,
+        alignSelf:'center', 
+        padding:15,
+        justifyContent:'center'
     },
-    logoImage: {
-        width:"50%",
-        marginHorizontal:"25%",
-        height:180,
-    }
 });
 
 export default LogoComponent;

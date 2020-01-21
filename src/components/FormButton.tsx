@@ -32,13 +32,13 @@ class FormButton extends Component<props, state>{
 const styles = StyleSheet.create({
     button: {
         width:"80%",
-        backgroundColor: "#8bc34a",
+        backgroundColor: "#3B90FA",
         paddingVertical: 10,
         marginHorizontal: "10%",
         justifyContent:'center',
         height:49,
         marginVertical: 10,
-        borderRadius:5,
+        borderRadius:50,
         marginTop:25,
     },
 });

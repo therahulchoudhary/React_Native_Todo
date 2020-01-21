@@ -18,6 +18,13 @@ interface state{
   errors : {
     email : string,
     password : string,
+    auth : string,
+  },
+  userInfo : {
+    email: string,
+    password : string,
+    name : string,
+    loggedIn : boolean,
   }
 }
 
@@ -36,16 +43,28 @@ class Login extends Component<props, state>{
       },
       errors : {
         email : '',
-        password : ''
+        password : '',
+        auth : ''
+      },
+      userInfo : {
+        email : '',
+        password : '',
+        name: '',
+        loggedIn : false,
       }
     }
-    this._retrieveData();
+    this._retrieveData('loggedUser');
   }
-  _retrieveData = async () => {
+  _retrieveData = async (arg :string) => {
     try {
-      const value = await AsyncStorage.getItem('userData');
+      const value = await AsyncStorage.getItem(arg);
       if (value !== null) {
-        return JSON.parse(value);
+        if(arg=='loggedUser'){
+          this.props.navigation.navigate('TaskScreen');
+        }
+        else{
+          this.setState({userInfo : JSON.parse(value)});
+        }
       }
     } catch (error) {
       // Error retrieving data
@@ -107,11 +126,25 @@ class Login extends Component<props, state>{
     }
     return isvalid;
   }
+  _storeData = async () => {
+    try {
+        await AsyncStorage.setItem('loggedUser',JSON.stringify(this.state.userInfo));
+    } catch (error) {
+        // Error saving data
+    }
+  }
   submitForm = () => {
-    let formValue = this._retrieveData();
-    console.log('Form Value',formValue);
+    this._retrieveData('userData');
     if(this.validateForm()==true){
-      // if(this.state.inputFields.email == formValue.email)
+      if(this.state.userInfo.email == this.state.inputFields.email && this.state.userInfo.password == this.state.inputFields.password){
+        this.props.navigation.navigate('TaskScreen');
+        this._storeData();
+      }
+      else {
+        let obj = this.state.errors;
+        obj.auth = "Invalid Email or Password";
+        this.setState({errors : obj});
+      }
     }
   }
   render(){
@@ -121,11 +154,12 @@ class Login extends Component<props, state>{
     ];
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="#ba2d65"/>
+        <StatusBar backgroundColor="#225E9C"/>
         <View style={styles.form}>
-          <ScrollView>
             <LogoComponent/>
+            <Text style={{fontSize:30,textAlign:'center',fontWeight:'bold',color:'#225E9C',paddingVertical:5}}>To<Text style={{fontWeight:"normal",}}>Do</Text></Text>
             {this.createFields(fields)}
+            <Text style={styles.errorMessage}>{this.state.errors.auth}</Text>
             <FormButton value="Login" clickEvent={this.submitForm}/>
             <TouchableOpacity>
               <Text 
@@ -135,7 +169,6 @@ class Login extends Component<props, state>{
               </Text>
               <Text></Text>
             </TouchableOpacity>
-          </ScrollView>
         </View>
       </View>
     );
@@ -145,18 +178,15 @@ class Login extends Component<props, state>{
 const styles = StyleSheet.create({
   container: {
     flex:1,
-    backgroundColor: "#ff94c2",
+    justifyContent:'center'
   },
   form: {
-    flexGrow:1,
-    marginTop:60,
     borderRadius:25,
-    borderBottomLeftRadius:0,
-    borderBottomRightRadius:0,
-    width:"100%",
+    width:"90%",
+    marginHorizontal:"5%",
     backgroundColor:"white",
     paddingTop:30,
-    elevation:20,
+    elevation:5,
   },
   formHeading: {
     fontSize: 42,
@@ -169,6 +199,11 @@ const styles = StyleSheet.create({
     textAlign:'center',
     color:'#6d7a6e',
     paddingVertical:20,
+  },
+  errorMessage: {
+    width:"80%",
+    marginHorizontal : "10%",
+    color:"red"
   }
 });
 

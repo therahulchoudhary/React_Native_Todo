@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   inputField: {
     width:"80%",
     borderBottomWidth:1,
-    borderColor:"rgba(240, 98, 146,1)",
+    borderColor:"#3B90FA",
     marginHorizontal: "10%",
     paddingHorizontal:15,
   },

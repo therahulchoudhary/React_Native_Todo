@@ -14,7 +14,7 @@ const Navigation = createStackNavigator(
     TaskScreen : {screen:Tasks,navigationOptions:{title:'Tasks'}}
   },
   {
-    initialRouteName: 'TaskScreen',
+    initialRouteName: 'LoginScreen',
     headerMode:'none'
   },
 );

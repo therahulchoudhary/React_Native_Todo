@@ -145,17 +145,16 @@ class Signup extends Component<props,state>{
         ]; 
         return(
             <View style={styles.container}>
-                <StatusBar backgroundColor="#ba2d65"/>
-                <ScrollView>
-                    <View style={styles.form}>
+                <StatusBar backgroundColor="#225E9C"/>
+                <View style={styles.form}>
                         <LogoComponent/>
+                        <Text style={{fontSize:30,textAlign:'center',fontWeight:'bold',color:'#225E9C',paddingVertical:5}}>To<Text style={{fontWeight:"normal",}}>Do</Text></Text>
                         {this.createFields(fields)}
                         <FormButton value="Signup" clickEvent={this.submitForm}/>
                         <TouchableOpacity>
                             <Text style={styles.newRegister} onPress={()=>this.props.navigation.navigate('LoginScreen')}>Already have an account?</Text>
                         </TouchableOpacity>
-                    </View>
-                </ScrollView>
+                </View>
             </View>
         );
     }
@@ -163,18 +162,15 @@ class Signup extends Component<props,state>{
 const styles = StyleSheet.create({
     container: {
         flex:1,
-        backgroundColor:"#ff94c2",
+        justifyContent:'center'
     },
     form: {
-        flexGrow:1,
-        marginTop:60,
         borderRadius:25,
-        borderBottomLeftRadius:0,
-        borderBottomRightRadius:0,
-        width:"100%",
+        width:"90%",
+        marginHorizontal:"5%",
         backgroundColor:"white",
         paddingTop:40,
-        elevation:20,
+        elevation:5,
     },
     formHeading: {
         fontSize: 42,
