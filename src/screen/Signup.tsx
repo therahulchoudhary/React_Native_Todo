@@ -21,6 +21,7 @@ interface state{
         name: string,
         email: string,
         password: string,
+        loggedIn: boolean,
     },
     modalVisible : boolean,
     errors : {
@@ -42,6 +43,7 @@ class Signup extends Component<props,state>{
                 name:'',
                 email:'',
                 password:'',
+                loggedIn:false,
             },
             modalVisible : true,
             errors : {
@@ -132,8 +134,11 @@ class Signup extends Component<props,state>{
             // Error saving data
         }
     }
-    submitForm = () => {        
+    submitForm = () => {     
+        let obj = this.state.inputState;   
         if(this.validateForm()==true){
+            obj.loggedIn = true;
+            this.setState({inputState:obj});
             this._storeData();
         }
     }

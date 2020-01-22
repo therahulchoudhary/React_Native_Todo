@@ -63,6 +63,7 @@ class Login extends Component<props, state>{
           this.props.navigation.navigate('TaskScreen');
         }
         else{
+          console.log(value);
           this.setState({userInfo : JSON.parse(value)});
         }
       }
