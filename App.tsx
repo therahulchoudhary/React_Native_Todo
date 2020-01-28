@@ -6,15 +6,17 @@ import Signup from './src/screen/Signup';
 import LogoComponent from './src/components/LogoComponent';
 import {View} from 'react-native';
 import Tasks from './src/screen/tasks ';
+import { Hooks } from './src/screen/hooks';
 
 const Navigation = createStackNavigator(
   {
     LoginScreen : {screen:Login,navigationOptions:{title:'Login'}},
     SignupScreen : {screen:Signup,navigationOptions:{title:'Signup'}},
-    TaskScreen : {screen:Tasks,navigationOptions:{title:'Tasks'}}
+    TaskScreen : {screen:Tasks,navigationOptions:{title:'Tasks'}},
+    HooksScreen : {screen:Hooks,navigationOptions:{title:'Hooks'}}
   },
   {
-    initialRouteName: 'LoginScreen',
+    initialRouteName: 'HooksScreen',
     headerMode:'none'
   },
 );

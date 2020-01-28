@@ -20,32 +20,35 @@ interface state{
         name:string,
         email:string,
         password:string,
+        loggedIn:boolean,
     },
     modalVisible:boolean,
 }
 
 const mockData = [
-    {title:'todo 1'},
-    {title:'todo 2'},
-    {title:'todo 3'},
-    {title:'todo 4'},
-    {title:'todo 5'},
-    {title:'todo 6'},
-    {title:'todo 7'},
+    {id:'1',title:'todo 1'},
+    {id:'2',title:'todo 2'},
+    {id:'3',title:'todo 4'},
+    {id:'4',title:'todo 3'},
+    {id:'5',title:'todo 5'},
+    {id:'6',title:'todo 6'},
+    {id:'7',title:'todo 7'},
 ]
 
 export default class Tasks extends Component<props,state>{
     constructor(props : props){
         super(props);
-        this._retrieveData('loggedUser');
+        this._retrieveData('userData');
         this.state = {
             loggedUsername : {
                 name:'',
                 email:'',
-                password:''
+                password:'',
+                loggedIn:true,
             },
             modalVisible:false,
         }
+        // this._retrieveData('userData');
     }
     _retrieveData = async (arg : string) => {
         try {
@@ -57,16 +60,19 @@ export default class Tasks extends Component<props,state>{
           // Error retrieving data
         }
     };
-    _removeData = async () => {
+    _storeData = async () => {
         try {
-          const value = await AsyncStorage.removeItem('loggedUser');
+            await AsyncStorage.setItem('userData',JSON.stringify(this.state.loggedUsername));
         } catch (error) {
-          // Error retrieving data
+            // Error saving data
         }
-    };
+      }
     logout = () => {
-        this._removeData();
+        let obj = this.state.loggedUsername;
+        obj.loggedIn = false;
+        this.setState({loggedUsername:obj});
         this.props.navigation.navigate('LoginScreen');
+        this._storeData();
     };
     add = () => {
         
@@ -92,8 +98,8 @@ export default class Tasks extends Component<props,state>{
                 </View>
                 <FlatList
                     data={mockData}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item,index }) => this.getListItem(item)}
+                    renderItem={({ item }) => this.getListItem(item)}
+                    keyExtractor={item=>item.id}
                 />
                 <View style={styles.addButton}>
                     <FormButton value="+" clickEvent={()=>this.setModalVisible(true)}/>
@@ -117,7 +123,7 @@ export default class Tasks extends Component<props,state>{
                                 this.setModalVisible(!this.state.modalVisible);
                                 }} style={{position:'absolute',right:10,top:10}}>
                                 <Text>
-                                    <Icon name="close" size={15}/>
+                                    <Icon name="close" size={25} color='grey'/>
                                 </Text>
                             </TouchableHighlight>
                         </View>

@@ -1,10 +1,9 @@
 import { Component } from "react";
 import React from 'react';
-import {StyleSheet,ScrollView,View,Text,TouchableOpacity,StatusBar,AsyncStorage} from 'react-native';
+import {StyleSheet,View,Text,TouchableOpacity,StatusBar,AsyncStorage,Button} from 'react-native';
 import FormTextInput from '../components/FormTextInput';
 import FormButton from "../components/FormButton";
 import LogoComponent from "../components/LogoComponent";
-import { string } from "prop-types";
 
 interface props{
   navigation: any;
@@ -32,6 +31,7 @@ const validEmailRegex = RegExp(
 	/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
 );
 
+
 class Login extends Component<props, state>{
   constructor(props : props){
     super(props);
@@ -53,18 +53,17 @@ class Login extends Component<props, state>{
         loggedIn : false,
       }
     }
-    this._retrieveData('loggedUser');
+    this._retrieveData('userData');
   }
   _retrieveData = async (arg :string) => {
     try {
       const value = await AsyncStorage.getItem(arg);
       if (value !== null) {
-        if(arg=='loggedUser'){
-          this.props.navigation.navigate('TaskScreen');
+        if(JSON.parse(value).loggedIn == false){
+          this.setState({userInfo : JSON.parse(value)});
         }
         else{
-          console.log(value);
-          this.setState({userInfo : JSON.parse(value)});
+          this.props.navigation.navigate('TaskScreen');
         }
       }
     } catch (error) {
@@ -129,15 +128,18 @@ class Login extends Component<props, state>{
   }
   _storeData = async () => {
     try {
-        await AsyncStorage.setItem('loggedUser',JSON.stringify(this.state.userInfo));
+        await AsyncStorage.setItem('userData',JSON.stringify(this.state.userInfo));
     } catch (error) {
         // Error saving data
     }
   }
   submitForm = () => {
     this._retrieveData('userData');
+    let obj = this.state.userInfo;
     if(this.validateForm()==true){
       if(this.state.userInfo.email == this.state.inputFields.email && this.state.userInfo.password == this.state.inputFields.password){
+        obj.loggedIn = true;
+        this.setState({userInfo:obj});
         this.props.navigation.navigate('TaskScreen');
         this._storeData();
       }
@@ -168,7 +170,6 @@ class Login extends Component<props, state>{
               onPress={() => this.props.navigation.navigate('SignupScreen')}
               >Don't Have an Account?
               </Text>
-              <Text></Text>
             </TouchableOpacity>
         </View>
       </View>

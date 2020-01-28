@@ -2,7 +2,6 @@ import {Component} from 'react';
 import React from 'react';
 import { Text,
     View,
-    ScrollView,
     TouchableOpacity,
     StyleSheet,
     StatusBar,
